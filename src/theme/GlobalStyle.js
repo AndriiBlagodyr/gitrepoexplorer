@@ -13,7 +13,7 @@ export const GlobalStyle = createGlobalStyle`
     background-color: ${props => props.theme.colors.bgGreySecondary};
 
     font-size: 14px;
-    font-family: sans-serif;
+    font-family: 'Montserrat', sans-serif;
   }
 
   html, body {

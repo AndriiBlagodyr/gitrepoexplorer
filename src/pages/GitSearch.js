@@ -3,6 +3,13 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import { loadUsers } from '../store/users';
+import { GitSearchInput, FullWidthButton } from '../styles/styles';
+import { DropDownRepos } from '../components/DropDownRepos/DropDownRepos';
+
+const StyledTitle = styled.h1`
+  text-align: center;
+  margin-bottom: 20px;
+`;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -11,7 +18,7 @@ const Wrapper = styled.div`
 `;
 
 const StyledPanel = styled.div`
-  max-width: 650px;
+  max-width: 450px;
   height: 100vh;
   padding: 16px;
   display: flex;
@@ -41,17 +48,22 @@ export const GitSearch = () => {
   return (
     <Wrapper>
       <StyledPanel>
-        <h1>Git Search</h1>
+        <StyledTitle>Github Repos Explorer</StyledTitle>
         <form onSubmit={onSubmit}>
-          <input
+          <GitSearchInput
             type="text"
             name="searchValue"
             placeholder="Enter username"
             value={searchValue}
             onChange={searchValueChangeHandler}
+            autoComplete="off"
           />
-          <input type="submit" value="Search" />
+          <FullWidthButton type="submit" value="Search">
+            Search
+          </FullWidthButton>
         </form>
+        <DropDownRepos userName="test" />
+        <DropDownRepos userName="test2" />
       </StyledPanel>
     </Wrapper>
   );
