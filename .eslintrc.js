@@ -42,6 +42,7 @@ module.exports = {
     'func-names': 'off',
     'max-len': 'off',
     'no-param-reassign': 'off',
+    'no-plusplus': 'off',
     'no-process-exit': 'off',
     'no-return-await': 'off',
     'no-shadow': ['warn', { builtinGlobals: false, hoist: 'functions', allow: [] }],
