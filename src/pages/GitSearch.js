@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { loadUsers } from '../store/users';
+import { loadUsers, getFirstFiveUsers } from '../store/users';
 import { GitSearchInput, FullWidthButton } from '../styles/styles';
 import { DropDownRepos } from '../components/DropDownRepos/DropDownRepos';
 
@@ -19,7 +19,7 @@ const Wrapper = styled.div`
 
 const StyledPanel = styled.div`
   max-width: 450px;
-  height: 100vh;
+  min-height: 100vh;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -28,13 +28,19 @@ const StyledPanel = styled.div`
   box-shadow: 0 13px 26px 0 rgba(0, 0, 0, 0.16);
 `;
 
+const ErrorMessage = styled.span`
+  color: tomato;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: left;
+  margin: 0 8px 12px;
+`;
+
 export const GitSearch = () => {
   const [searchValue, setSearchValue] = useState('');
+  const [showError, setShowError] = useState(false);
+  const usersData = useSelector(getFirstFiveUsers());
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(loadUsers());
-  }, [dispatch]);
 
   const searchValueChangeHandler = event => {
     const { value } = event.target;
@@ -43,7 +49,13 @@ export const GitSearch = () => {
 
   const onSubmit = event => {
     event.preventDefault();
-    console.log(searchValue);
+    dispatch({ type: 'projects/projectsCleared' });
+    if (searchValue === '') {
+      setShowError(true);
+      return;
+    }
+    setShowError(false);
+    dispatch(loadUsers(searchValue));
   };
   return (
     <Wrapper>
@@ -62,8 +74,11 @@ export const GitSearch = () => {
             Search
           </FullWidthButton>
         </form>
-        <DropDownRepos userName="test" />
-        <DropDownRepos userName="test2" />
+        {showError && <ErrorMessage>Please, fill in username input field</ErrorMessage>}
+        {usersData.length > 0 &&
+          usersData.map(user => {
+            return <DropDownRepos key={user?.login} userName={user?.login} />;
+          })}
       </StyledPanel>
     </Wrapper>
   );

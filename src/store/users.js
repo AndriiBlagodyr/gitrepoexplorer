@@ -16,7 +16,7 @@ const slice = createSlice({
     },
 
     usersReceived: (users, action) => {
-      users.list = action.payload;
+      users.list = action.payload.data.items;
       users.loading = false;
     },
 
@@ -31,13 +31,13 @@ export const { usersReceived, usersRequested, usersRequestFailed } = slice.actio
 export default slice.reducer;
 
 // Action Creators
-const url = '/search/users';
+const url = '/search/users?q=';
 
 // eslint-disable-next-line no-unused-vars
-export const loadUsers = () => (dispatch, getState) => {
+export const loadUsers = searchName => (dispatch, getState) => {
   return dispatch(
     apiCallBegan({
-      url,
+      url: `${url}${searchName}`,
       onStart: usersRequested.type,
       onSuccess: usersReceived.type,
       onError: usersRequestFailed.type,
@@ -46,4 +46,8 @@ export const loadUsers = () => (dispatch, getState) => {
 };
 
 // Selector
-export const getUsers = () => createSelector(state => state.entities.users);
+export const getFirstFiveUsers = () =>
+  createSelector(
+    state => state.entities.users.list,
+    list => list.slice(0, 5)
+  );

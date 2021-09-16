@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { loadProjects, getUserProjects } from '../../store/projects';
 
 const DropDownWrapper = styled.div`
   color: ${props => props.theme.colors.textPrimary};
@@ -34,46 +37,60 @@ const RepoItemWrapper = styled.div`
   max-height: ${props => (props.isOpened ? '290px' : 0)};
   visibility: ${props => (props.isOpened ? 'visible' : 'hidden')};
   opacity: ${props => (props.isOpened ? 1 : 0)};
+  padding: 0 8px;
   &:not(:last-child) {
-    border-bottom: 1px solid #666;
+    border-bottom: ${props => (props.isOpened ? '1px solid #666' : '')};
   }
   transition: ${props =>
     props.isOpened ? 'max-height 0.7s, opacity 2s, visibility 3s ease' : 'all 0s ease 0s'};
 `;
 
-const repos = [
-  { title: 'Title1', description: 'Description1' },
-  { title: 'Title2', description: 'Description2' },
-  { title: 'Title3', description: 'Description3' },
-];
+const CardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
 
-const RepoItem = ({ title, description, isOpened }) => {
+const CardHeaderTitle = styled.h3`
+  margin-bottom: 10px;
+`;
+
+const RepoItem = ({ title, description, isOpened, stars }) => {
   return (
     <RepoItemWrapper isOpened={isOpened}>
-      <h3>{title}</h3>
-      <p>{description}</p>
+      <CardHeader>
+        <CardHeaderTitle>Title: {title}</CardHeaderTitle>
+        <span>{stars}&nbsp;&nbsp;&#9733;</span>
+      </CardHeader>
+      <p>Description: {description}</p>
     </RepoItemWrapper>
   );
 };
 
 export function DropDownRepos({ userName }) {
   const [isOpened, setIsOpened] = useState(false);
+  const dispatch = useDispatch();
+  const usersProjects = useSelector(getUserProjects(userName));
 
   const handleClick = () => {
+    if (!isOpened) {
+      dispatch(loadProjects(userName));
+    }
     setIsOpened(!isOpened);
   };
 
   return (
     <DropDownWrapper isOpened={isOpened} onClick={handleClick}>
       <DropDownText isOpened={isOpened}>{userName}</DropDownText>
-      {repos.map(repo => (
-        <RepoItem
-          isOpened={isOpened}
-          key={repo.title}
-          title={repo.title}
-          description={repo.description}
-        />
-      ))}
+      {usersProjects &&
+        usersProjects.map(repo => (
+          <RepoItem
+            isOpened={isOpened}
+            key={repo.name}
+            title={repo.name}
+            description={repo.description}
+            stars={repo.stargazers_count}
+          />
+        ))}
     </DropDownWrapper>
   );
 }
